@@ -56,6 +56,10 @@ const formatTime = (date) =>
     minute: "2-digit",
     hour12: true,
   });
+const systemTextFor = (message, me) =>
+  message.text === `Moment has been seen by ${me.name}`
+    ? "Moment has been seen by you"
+    : message.text;
 const Avatar = ({ src, name, size = 44 }) => (
   <img
     className="avatar"
@@ -364,6 +368,8 @@ function ChatApp({ me, setMe }) {
     [blockedUsers, setBlockedUsers] = useState([]),
     [notifications, setNotifications] = useState([]),
     [panel, setPanel] = useState(null),
+    [momentViewer, setMomentViewer] = useState(null),
+    [mobileSidebarOpen, setMobileSidebarOpen] = useState(false),
     [notice, setNotice] = useState(null),
     [online, setOnline] = useState({}),
     [typing, setTyping] = useState(false);
@@ -460,6 +466,7 @@ function ChatApp({ me, setMe }) {
   const open = async (c) => {
     setActive(c);
     setPanel(null);
+    setMobileSidebarOpen(false);
     socketRef.current?.emit("conversation:join", c._id);
     setMessages(await api(`/conversations/${c._id}/messages`));
   };
@@ -492,6 +499,7 @@ function ChatApp({ me, setMe }) {
   };
   const openMoment = async (message) => {
     try {
+      setMomentViewer({ image: message.image, sender: message.sender?.name });
       const updated = await api(`/messages/${message._id}/moment-seen`, {
         method: "PATCH",
       });
@@ -537,6 +545,10 @@ function ChatApp({ me, setMe }) {
     await api("/notifications/read", { method: "PATCH" });
     setNotifications((items) => items.map((item) => ({ ...item, read: true })));
   };
+  const clearNotifications = async () => {
+    await api("/notifications", { method: "DELETE" });
+    setNotifications([]);
+  };
   const unblock = async (id) => {
     await api("/block/" + id, { method: "DELETE" });
     setBlockedUsers((users) => users.filter((user) => user.id !== id));
@@ -567,7 +579,20 @@ function ChatApp({ me, setMe }) {
         </div>
       )}
       <section className="shell">
-        <aside className={"sidebar " + (active ? "mobileHidden" : "")}>
+        {active && mobileSidebarOpen && (
+          <button
+            className="drawerShade"
+            aria-label="Close chats"
+            onClick={() => setMobileSidebarOpen(false)}
+          />
+        )}
+        <aside
+          className={
+            "sidebar " +
+            (active ? "mobileDrawer " : "") +
+            (mobileSidebarOpen ? "drawerOpen" : "")
+          }
+        >
           <div className="sideHead">
             <div className="brand">
               <span>B</span>OND
@@ -670,6 +695,7 @@ function ChatApp({ me, setMe }) {
               online={online}
               typing={typing}
               onBack={() => setActive(null)}
+              onMenu={() => setMobileSidebarOpen(true)}
               onSend={send}
               onMoment={sendMoment}
               onOpenMoment={openMoment}
@@ -698,11 +724,18 @@ function ChatApp({ me, setMe }) {
           notifications={notifications}
           accept={accept}
           unblock={unblock}
+          onClearNotifications={clearNotifications}
           active={active}
           onCreated={(c) => {
             setConvos((x) => [c, ...x]);
             open(c);
           }}
+        />
+      )}
+      {momentViewer && (
+        <MomentViewer
+          moment={momentViewer}
+          close={() => setMomentViewer(null)}
         />
       )}
     </div>
@@ -851,7 +884,6 @@ function Conversation({
                 className="momentCard"
                 onClick={() => {
                   if (m.sender._id !== me.id) {
-                    window.open(m.image, "_blank", "noopener,noreferrer");
                     onOpenMoment(m);
                   }
                 }}
@@ -865,7 +897,7 @@ function Conversation({
                 </small>
               </button>
             ) : (
-              <span>{m.text}</span>
+              <span>{m.kind === "system" ? systemTextFor(m, me) : m.text}</span>
             )}
             <time>
               {formatTime(m.createdAt)}
@@ -954,6 +986,22 @@ function Empty({ text }) {
   return <div className="empty">{text}</div>;
 }
 
+function MomentViewer({ moment, close }) {
+  return (
+    <div
+      className="momentOverlay"
+      onMouseDown={(e) => e.target === e.currentTarget && close()}
+    >
+      <section className="momentViewer">
+        <button className="momentClose" onClick={close} title="Close moment">
+          <X />
+        </button>
+        <img src={moment.image} alt={`${moment.sender || "Bond"} moment`} />
+      </section>
+    </div>
+  );
+}
+
 function Modal({
   type,
   close,
@@ -965,6 +1013,7 @@ function Modal({
   notifications,
   accept,
   unblock,
+  onClearNotifications,
   active,
   onCreated,
 }) {
@@ -1098,24 +1147,29 @@ function Modal({
             ))}
           {type === "notifications" &&
             (notifications.length ? (
-              <div className="notificationList">
-                {notifications.map((n) => (
-                  <div
-                    className={"historyNotice " + (!n.read ? "unread" : "")}
-                    key={n._id}
-                  >
-                    <Avatar
-                      src={n.actor?.avatar}
-                      name={n.actor?.name || "Bond"}
-                    />
-                    <div>
-                      <b>{n.actor?.name || "Bond"}</b>
-                      <p>{n.text}</p>
-                      <small>{new Date(n.createdAt).toLocaleString()}</small>
+              <>
+                <button className="clearNotices" onClick={onClearNotifications}>
+                  Clear all notifications
+                </button>
+                <div className="notificationList">
+                  {notifications.map((n) => (
+                    <div
+                      className={"historyNotice " + (!n.read ? "unread" : "")}
+                      key={n._id}
+                    >
+                      <Avatar
+                        src={n.actor?.avatar}
+                        name={n.actor?.name || "Bond"}
+                      />
+                      <div>
+                        <b>{n.actor?.name || "Bond"}</b>
+                        <p>{n.text}</p>
+                        <small>{new Date(n.createdAt).toLocaleString()}</small>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <Empty text="No notifications yet." />
             ))}

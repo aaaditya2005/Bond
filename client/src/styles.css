@@ -892,6 +892,55 @@ textarea:focus {
   border-radius: 10px;
   margin-top: 30px;
 }
+.momentOverlay {
+  position: fixed;
+  z-index: 45;
+  inset: 0;
+  background: #15231fd9;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+}
+.momentViewer {
+  position: relative;
+  width: min(92vw, 760px);
+  height: min(86vh, 760px);
+  display: grid;
+  place-items: center;
+}
+.momentViewer img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 14px;
+  box-shadow: 0 22px 70px #0007;
+  object-fit: contain;
+  background: #0d1714;
+}
+.momentClose {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 30px #0004;
+}
+.clearNotices {
+  width: 100%;
+  border: 1px solid #edc3b6;
+  background: #fff8f5;
+  color: #b34c36;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
 @keyframes drawer {
   from {
     transform: translateX(100%);

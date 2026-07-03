@@ -183,6 +183,10 @@ router.patch("/notifications/read", auth, async (req, res) => {
   );
   res.json({ ok: true });
 });
+router.delete("/notifications", auth, async (req, res) => {
+  await Notification.deleteMany({ recipient: req.user.id });
+  res.json({ ok: true });
+});
 router.get("/users/search", auth, async (req, res) => {
   const q = clean(req.query.q).toLocaleLowerCase();
   if (!q) return res.json([]);
@@ -523,7 +527,7 @@ router.patch("/messages/:id/moment-seen", auth, async (req, res) => {
   if (String(m.sender) === req.user.id)
     return res.status(403).json({ message: "Only the receiver can open this moment." });
   m.kind = "system";
-  m.text = "Moment has been seen";
+  m.text = `Moment has been seen by ${req.user.name}`;
   m.image = undefined;
   m.momentSeen = true;
   m.readBy.addToSet(req.user.id);
