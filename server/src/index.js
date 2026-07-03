@@ -37,6 +37,8 @@ app.use(
         styleSrc: ["'self'", "https:", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:"],
         fontSrc: ["'self'", "https:", "data:"],
+        frameSrc: ["'self'", "https://accounts.google.com"],
+        childSrc: ["'self'", "https://accounts.google.com", "blob:"],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         frameAncestors: ["'self'"],
