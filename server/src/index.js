@@ -26,7 +26,24 @@ const app = express(),
   });
 app.set("trust proxy", 1);
 app.set("io", io);
-app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://accounts.google.com", "blob:"],
+        connectSrc: ["'self'", "https://accounts.google.com"],
+        styleSrc: ["'self'", "https:", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:"],
+        fontSrc: ["'self'", "https:", "data:"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        frameAncestors: ["'self'"],
+      },
+    },
+  }),
+);
 app.use(
   cors({
     origin: (origin, cb) =>
