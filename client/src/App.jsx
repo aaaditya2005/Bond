@@ -579,6 +579,14 @@ function ChatApp({ me, setMe }) {
         </div>
       )}
       <section className="shell">
+        <div className="mobileHeader">
+          <button className="mobileMenuToggle" onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)} title="Show chats">
+            <Menu size={20} />
+          </button>
+          <div className="brand">
+            <span>B</span>OND
+          </div>
+        </div>
         {active && mobileSidebarOpen && (
           <button
             className="drawerShade"
@@ -588,8 +596,7 @@ function ChatApp({ me, setMe }) {
         )}
         <aside
           className={
-            "sidebar " +
-            (active ? "mobileDrawer " : "") +
+            "sidebar mobileDrawer " +
             (mobileSidebarOpen ? "drawerOpen" : "")
           }
         >
@@ -813,6 +820,7 @@ function Conversation({
   onOpenMoment,
   onTyping,
   onInfo,
+  onMenu,
 }) {
   const [text, setText] = useState(""),
     [showEmoji, setShowEmoji] = useState(false),
@@ -844,6 +852,9 @@ function Conversation({
       <div className="chatHead">
         <button className="back" onClick={onBack}>
           <ChevronLeft />
+        </button>
+        <button className="mobileMenuBtn" onClick={onMenu} title="Show chats">
+          <Menu size={20} />
         </button>
         <Avatar src={avatar} name={name} />
         <button className="personTitle" onClick={onInfo}>

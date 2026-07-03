@@ -462,7 +462,10 @@ textarea:focus {
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(9px);
 }
-.back {
+.mobileMenuBtn {
+  display: none;
+}
+.mobileHeader {
   display: none;
 }
 .personTitle {
@@ -963,14 +966,66 @@ textarea:focus {
   }
   .shell {
     display: block;
-    height: calc(100vh - 44px);
+    height: calc(100vh - 44px - 56px);
+    position: relative;
+    margin-top: 56px;
   }
-  .sidebar,
+  .mobileHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 56px;
+    padding: 0 12px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    z-index: 26;
+  }
+  .mobileMenuToggle {
+    border: 0;
+    background: transparent;
+    color: #62716c;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  .mobileMenuToggle:hover {
+    background: #f2eee7;
+    border-radius: 50%;
+  }
+  .mobileHeader .brand {
+    flex: 1;
+  }
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 100px;
+    width: 100%;
+    height: calc(100vh - 100px - 44px);
+    z-index: 25;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    max-width: 85vw;
+  }
+  .sidebar.mobileDrawer.drawerOpen {
+    transform: translateX(0);
+  }
   .conversation {
     height: 100%;
+    width: 100%;
   }
   .mobileHidden {
     display: none;
+  }
+  .drawerShade {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    border: 0;
+    z-index: 24;
+    top: 100px;
   }
   .quoteBar {
     font-size: 12px;
@@ -990,24 +1045,125 @@ textarea:focus {
   .back {
     display: grid;
   }
+  .mobileMenuBtn {
+    display: grid !important;
+    background: transparent;
+    border: 0;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    color: #62716c;
+    flex-shrink: 0;
+  }
+  .mobileMenuBtn:hover {
+    background: #f2eee7;
+  }
   .sideHead {
     padding-left: 16px;
   }
   .messages {
-    padding: 18px 12px;
+    padding: 14px 10px;
+    font-size: 13px;
   }
   .message {
-    max-width: 86%;
+    max-width: min(520px, 88%);
+    font-size: 14px;
+    padding: 7px 10px 4px;
+  }
+  .senderName {
+    font-size: 10px;
+  }
+  .momentCard {
+    width: 160px;
+  }
+  .momentCard b {
+    font-size: 13px;
+  }
+  .momentCard small {
+    font-size: 10px;
+  }
+  .chatHead {
+    height: 60px;
+    padding: 0 10px;
+    gap: 8px;
+  }
+  .chatHead .avatar {
+    width: 38px;
+    height: 38px;
+  }
+  .personTitle {
+    font-size: 14px;
+  }
+  .personTitle b {
+    font-size: 14px;
+  }
+  .personTitle small {
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  .personTitle:hover {
+    background: transparent;
+  }
+  .icon {
+    width: 36px;
+    height: 36px;
+  }
+  .icon svg {
+    width: 18px;
+  }
+  .search input {
+    font-size: 14px;
+    padding: 11px 38px 11px;
+  }
+  .chatList {
+    max-height: calc(100vh - 280px);
+  }
+  .chatText b {
+    font-size: 13px;
+  }
+  .chatText small {
+    font-size: 12px;
+  }
+  .meBar {
+    padding: 10px 15px;
+  }
+  .meBar .avatar {
+    width: 40px;
+    height: 40px;
+  }
+  .meBar b {
+    font-size: 13px;
+  }
+  .meBar small {
+    font-size: 11px;
+    max-width: 100%;
   }
   .toast {
     right: 10px;
     width: calc(100% - 20px);
+    top: 50px;
   }
   .composer {
     padding: 10px;
+    gap: 8px;
+  }
+  .composer input {
+    font-size: 14px;
+    padding: 11px 15px;
+  }
+  .composer > button {
+    width: 42px;
+    height: 42px;
+  }
+  .emojiToggle {
+    width: 42px;
+    height: 42px;
+  }
+  .emojiPicker {
+    width: 240px;
   }
   .authCard h2 {
-    font-size: 30px;
+    font-size: 28px;
   }
 }
 .fileInput {

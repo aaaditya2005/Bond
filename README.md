@@ -6,7 +6,6 @@
 
 ## ✨ Key Features
 
-- **Real-Time Messaging** – Instant message delivery with Socket.IO powered live updates
 - **Private Sessions** – Messages auto-expire in 24 hours for privacy-conscious users
 - **Secure Authentication** – Email OTP verification and Google Sign-In integration
 - **Social Connectivity** – Friend requests, blocking, and user presence indicators
